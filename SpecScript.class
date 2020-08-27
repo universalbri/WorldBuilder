@@ -1,0 +1,41 @@
+#pragma once
+
+#ifndef _SPECSCRIPT_CLASS_
+#define _SPECSCRIPT_CLASS_
+
+#include "..\Actions and Events\Beats.class"
+
+class SpecScript
+{
+    // Required Functions
+    public: virtual void SetTheStage() = 0;
+    public: virtual void Lights() = 0;
+    public: virtual void Camera() = 0;
+    public: virtual void Action() = 0;
+
+    // Required for State Awareness
+    public: virtual bool isSceneComplete() = 0;
+    public: virtual std::string Name() = 0;
+};
+
+class Script: public SpecScript
+{
+
+    // Required Functions
+    public: void SetTheStage() {};
+    public: void Lights() {};
+    public: void Camera() {};
+    public: void Action() {};
+
+    // Required for State Awareness
+    public: bool isSceneComplete() { return false; };
+    public: std::string Name() { return "NO NAME"; };
+
+    // Set Accessors, TODO: /// NEED TO ADD PROPS???? MAYBE
+    public: Beats BeatSheet;
+    // public: void Actors() {};
+
+};
+
+
+#endif _SPECSCRIPT_CLASS_

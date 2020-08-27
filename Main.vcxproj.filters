@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6d7ddb5c-9e98-476a-9d3b-1a3d463e9f72}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{11fd0517-f741-4cbd-861f-4d2a9b538340}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{ec73b04a-9507-4b31-87af-bbfdc56442e1}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="GLE">
+      <UniqueIdentifier>{58dd4d65-6a6c-478c-aaf8-35a5460420e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Oculus Objects">
+      <UniqueIdentifier>{50b74906-9301-4155-b9bb-608aa7c1f878}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene Objects">
+      <UniqueIdentifier>{92f7224b-aff0-403f-a51c-fc44fcd9a8a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Oculus Native">
+      <UniqueIdentifier>{3b92d258-b734-4eb8-845b-f1e3e9ebecc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Post Process">
+      <UniqueIdentifier>{b6b85b14-d41a-471c-87ea-9971d8dcee2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Acts">
+      <UniqueIdentifier>{449f7500-a292-4140-bb56-85f03a409547}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script Components">
+      <UniqueIdentifier>{eff4ac4d-4451-409c-a967-bbdb380c7054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Actions and Events">
+      <UniqueIdentifier>{ad3a1c3b-b01f-4feb-8677-424503d8003a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VR Dev\ovr_sdk_win_1.43.0\LibOVRKernel\Src\GL\CAPI_GLE.cpp">
+      <Filter>GLE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\VR Dev\ovr_platform_sdk_17.0.0\Windows\OVR_PlatformLoader.cpp">
+      <Filter>Oculus Native</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Win32_GLAppUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.class">
+      <Filter>Scene Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Shaders\ShaderFill.class">
+      <Filter>Post Process</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OculusRiftDevice.class">
+      <Filter>Oculus Objects</Filter>
+    </None>
+    <None Include="OculusTextureBuffer.class">
+      <Filter>Oculus Objects</Filter>
+    </None>
+    <None Include="Scene.class">
+      <Filter>Scene Objects</Filter>
+    </None>
+    <None Include="Vertex.class">
+      <Filter>Scene Objects</Filter>
+    </None>
+    <None Include="Classes\Shaders\TextureBuffer.class">
+      <Filter>Post Process</Filter>
+    </None>
+    <None Include="Classes\Shaders\VertexBuffer.class">
+      <Filter>Post Process</Filter>
+    </None>
+    <None Include="Classes\Shaders\IndexBuffer.class">
+      <Filter>Post Process</Filter>
+    </None>
+    <None Include="Classes\Shaders\DepthBuffer.class">
+      <Filter>Post Process</Filter>
+    </None>
+    <None Include="Prop.class">
+      <Filter>Scene Objects</Filter>
+    </None>
+    <None Include="SpecScript.class">
+      <Filter>Script Components</Filter>
+    </None>
+    <None Include="Acts\ActOneTemplate.class">
+      <Filter>Acts</Filter>
+    </None>
+    <None Include="Acts\ActOne.class">
+      <Filter>Acts</Filter>
+    </None>
+    <None Include="Classes\Actions and Events\Beats.class">
+      <Filter>Actions and Events</Filter>
+    </None>
+    <None Include="Classes\Scene\Object3D.class">
+      <Filter>Scene Objects</Filter>
+    </None>
+  </ItemGroup>
+</Project>

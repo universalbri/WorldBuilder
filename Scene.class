@@ -1,0 +1,232 @@
+#pragma once
+
+#ifndef _SCENE_CLASS_
+#define _SCENE_CLASS_
+
+#include "Prop.class"
+#include <iostream>
+#include <map>
+#include <string>
+
+
+class Scene
+{
+    public: map<string, Prop *>  Props;
+    public: enum MaterialTextures
+            {
+            BLANK = 0,
+            FLOOR = 1,
+            WALL = 2,
+            CEILING = 3,
+            RUNWAY = 4,
+            LASTPROP = 4
+    };  
+
+    public: ShaderFill * grid_material[MaterialTextures::LASTPROP+1] = { nullptr, nullptr, nullptr, nullptr, nullptr } ; // for basic template
+    private: bool m_bGridIsVisible = false;
+
+	public: void    AddProp(Prop *prop, string s)
+	{
+        prop->AllocateBuffers();
+        Props[ s ] = prop;
+	}
+
+    private:  Prop *grid = nullptr;
+    private: Vector3f startPosition;
+
+	public:	void Render(Matrix4f view, Matrix4f proj, Vector3f pos)
+	{
+		glClearColor(0.0f, 0.0f, 0.001f, 1.0f);
+
+        GLushort nCur = 0;
+        const int GRIDSIZE = 10;
+        const float GRIDLINEHW = 0.0005f;
+
+        if (m_bGridIsVisible)
+        {
+            if(grid == nullptr )
+            {
+                startPosition = pos;
+                grid = new Prop(Vector3f(0, 0, 0), ((Scene*)Globals::myScene)->grid_material[Scene::MaterialTextures::BLANK]);
+
+                for (float z = -GRIDSIZE; z <= GRIDSIZE; z++)
+                {
+                    grid->AddVertex(Vertex(-GRIDSIZE, 0.1f, pos.z + (z + GRIDLINEHW), 0, 0, 0xff00ff00));
+                    grid->AddVertex(Vertex(-GRIDSIZE, 0.1f, pos.z + (z - GRIDLINEHW), 1, 0, 0xff00ff00));
+                    grid->AddVertex(Vertex(GRIDSIZE, 0.1f, pos.z + (z - GRIDLINEHW), 0, 1, 0xff00ff00));
+                    grid->AddVertex(Vertex(GRIDSIZE, 0.1f, pos.z + (z + GRIDLINEHW), 1, 1, 0xff00ff00));
+
+                    grid->AddIndexes(
+                        vector<GLushort> {  GLushort(nCur + 0), GLushort(nCur + 1), GLushort(nCur + 2),
+                        GLushort(nCur + 0), GLushort(nCur + 2), GLushort(nCur + 3),
+                        GLushort(nCur + 3), GLushort(nCur + 2), GLushort(nCur + 0),
+                        GLushort(nCur + 2), GLushort(nCur + 1), GLushort(nCur + 0)  }
+                    );
+
+                    nCur += 4;
+                }
+
+                nCur += 0;
+                for (float x = -GRIDSIZE; x <= GRIDSIZE; x++)
+                {
+                    grid->AddVertex(Vertex(pos.x + (x + GRIDLINEHW), 0.1f, pos.z + GRIDSIZE, 0, 0, 0xff00ff00));
+                    grid->AddVertex(Vertex(pos.x + (x - GRIDLINEHW), 0.1f, pos.z + GRIDSIZE, 1, 0, 0xff00ff00));
+                    grid->AddVertex(Vertex(pos.x + (x - GRIDLINEHW), 0.1f, pos.z - GRIDSIZE, 0, 1, 0xff00ff00));
+                    grid->AddVertex(Vertex(pos.x + (x + GRIDLINEHW), 0.1f, pos.z - GRIDSIZE, 1, 1, 0xff00ff00));
+
+                    grid->AddIndexes(
+                        vector<GLushort> {  GLushort(nCur + 0), GLushort(nCur + 1), GLushort(nCur + 2),
+                        GLushort(nCur + 0), GLushort(nCur + 2), GLushort(nCur + 3),
+                        GLushort(nCur + 3), GLushort(nCur + 2), GLushort(nCur + 0),
+                        GLushort(nCur + 2), GLushort(nCur + 1), GLushort(nCur + 0)  }
+                    );
+
+                    nCur += 4;
+                }
+
+                grid->AllocateBuffers();
+            }
+            else
+            {
+                Vector3f vTo;
+                vTo.x = startPosition.x - pos.x;
+                vTo.y = startPosition.y - pos.y;
+                vTo.z = startPosition.z - pos.z;
+
+                grid->position = vTo;
+                startPosition = pos;
+            }
+
+            grid->Render(view, proj);
+        }
+
+        for (map<string, Prop*>::iterator it = Props.begin(); it != Props.end(); it++)
+        {
+            
+            // If the texture wasn't assigned to anything, then assign a default texture to it. 
+            if( it->second->Fill == nullptr)
+                it->second->Fill = grid_material[Scene::MaterialTextures::BLANK];
+
+            it->second->Render(view, proj);
+        }
+    }
+
+    public: void setGridIsVisible( bool bIsVisible )
+    {
+        m_bGridIsVisible = bIsVisible;
+        return;
+    }
+    
+	public: GLuint CreateShader(GLenum type, const GLchar* src)
+	{
+		GLuint shader = glCreateShader(type);
+
+		glShaderSource(shader, 1, &src, NULL);
+		glCompileShader(shader);
+
+		GLint r;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &r);
+		if (!r)
+		{
+			GLchar msg[1024];
+			glGetShaderInfoLog(shader, sizeof(msg), 0, msg);
+			if (msg[0]) {
+				assert(("Compiling shader failed: %s\n", msg));
+			}
+			return 0;
+		}
+
+		return shader;
+	}
+
+	public: void Init(int includeIntensiveGPUobject)
+	{
+		static const GLchar* VertexShaderSrc =
+			"#version 150\n"
+			"uniform mat4 matWVP;\n"
+			"in      vec4 Position;\n"
+			"in      vec4 Color;\n"
+			"in      vec2 TexCoord;\n"
+			"out     vec2 oTexCoord;\n"
+			"out     vec4 oColor;\n"
+			"void main()\n"
+			"{\n"
+			"   gl_Position = (matWVP * Position);\n"
+			"   oTexCoord   = TexCoord;\n"
+			"   oColor.rgb  = pow(Color.rgb, vec3(1.1));\n"   // convert from sRGB to linear
+			"   oColor.a    = Color.a;\n"
+			"}\n";
+
+		static const char* FragmentShaderSrc =
+			"#version 150\n"
+			"uniform sampler2D Texture0;\n"
+			"in      vec4      oColor;\n"
+			"in      vec2      oTexCoord;\n"
+			"out     vec4      FragColor;\n"
+			"void main()\n"
+			"{\n"
+			"   FragColor = oColor * texture2D(Texture0, oTexCoord);\n"
+			"}\n";
+
+		GLuint    vshader = CreateShader(GL_VERTEX_SHADER, VertexShaderSrc);
+		GLuint    fshader = CreateShader(GL_FRAGMENT_SHADER, FragmentShaderSrc);
+
+		// Make textures
+		for (int k = 0; k < 5; ++k)
+		{
+			static DWORD tex_pixels[256 * 256];
+			for (int j = 0; j < 256; ++j)
+			{
+				for (int i = 0; i < 256; ++i)
+				{
+                    tex_pixels[j * 256 + i] = 0xffffffff;
+					if (k == MaterialTextures::BLANK) tex_pixels[j * 256 + i] = 0xffffffff;// blank
+					if (k == MaterialTextures::FLOOR) tex_pixels[j * 256 + i] = (((i >> 7) ^ (j >> 7)) & 1) ? 0xffb4b4b4 : 0xff505050;// floor
+					if (k == MaterialTextures::WALL) tex_pixels[j * 256 + i] = (((j / 4 & 15) == 0) || (((i / 4 & 15) == 0) && ((((i / 4 & 31) == 0) ^ ((j / 4 >> 4) & 1)) == 0)))
+						? 0xff3c3c3c : 0xffb4b4b4;// wall
+                    if (k == MaterialTextures::CEILING) tex_pixels[j * 256 + i] = (i / 4 == 0 || j / 4 == 0) ? 0xff505050 : 0xffb4b4b4;// ceiling
+                    if ( (k == MaterialTextures::RUNWAY) && ( ( i == 126 || i == 127 || i == 128 || i == 129 || i == 130 ) )  && ( j > 90 && j < 166 ) )
+                            tex_pixels[j * 256 + i] = 0xff00ffff;  // runway stripe yellow line
+                    else if( k == MaterialTextures::RUNWAY )
+                        tex_pixels[j * 256 + i] = 0xff000000 |
+                                                  ( ( 0x66 + ( ( rand() % 30 ) - 15) ) << 16 ) |
+                                                  ( (0x66 + ((rand() % 30) - 15)) << 8) |
+                                                  (0x66 + ((rand() % 30) - 15));
+                }
+			}
+			TextureBuffer * generated_texture = new TextureBuffer(false, Sizei(256, 256), 4, (unsigned char *)tex_pixels);
+			grid_material[k] = new ShaderFill(vshader, fshader, generated_texture);
+		}
+
+		glDeleteShader(vshader);
+		glDeleteShader(fshader);
+	}
+
+	public: Scene() {}
+	public: Scene(bool includeIntensiveGPUobject)
+	{
+		Init(includeIntensiveGPUobject);
+	}
+	public: void Release()
+	{
+        for (map<string, Prop*>::iterator it = Props.begin(); it != Props.end(); it++)
+        {
+            delete it->second;
+            it->second = nullptr;
+        }
+        Props.clear();
+        for (int i = MaterialTextures::LASTPROP; i >= 0; i--)
+        {
+            delete grid_material[i];
+            grid_material[i] = nullptr;
+        }
+	}
+	public: ~Scene()
+	{
+		Release();
+	}
+};
+
+#endif _SCENE_CLASS_
+
+

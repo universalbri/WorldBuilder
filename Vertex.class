@@ -1,0 +1,33 @@
+#pragma once
+
+#ifndef _VERTEX_CLASS_
+#define _VERTEX_CLASS_
+
+#include <windows.h>
+
+using namespace OVR;
+#include "Extras/OVR_Math.h"
+
+
+class Vertex
+{
+    public: Vector3f  Pos;
+    public: DWORD     C;
+    public: float     U, V;
+
+	Vertex() {};
+	Vertex( float x, float y, float z, float u, float v, DWORD c )
+		{
+		Pos.x = x;
+		Pos.y = y;
+		Pos.z = z;
+		C = c;
+		U = u;
+		V = v;
+		};
+	~Vertex() {};
+};
+
+#endif _VERTEX_CLASS_
+
+

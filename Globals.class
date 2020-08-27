@@ -1,0 +1,32 @@
+#pragma once
+
+#ifndef _GLOBALS_CLASS_
+#define _GLOBALS_CLASS_
+
+class Globals
+{
+    // SELF NOTE: DEFINE the STATIC VARIABLES AFTER THE CLASS
+    public: static void *myScene;  // Scene *
+    public: static void *myRift;   // OculusRiftDevice *
+    public: static SYSTEMTIME programStartTime;
+    public: static SYSTEMTIME sceneStartTime;
+
+    public: static void InitGlobals()
+    {
+        ::GetLocalTime(&programStartTime);
+
+        myRift = nullptr;
+        myScene = nullptr;
+    }
+};
+
+void *Globals::myScene; // Scene *
+void *Globals::myRift;  // OculusRiftDevice *
+
+// Time Measures
+SYSTEMTIME Globals::programStartTime;
+SYSTEMTIME Globals::sceneStartTime;
+
+
+#endif _GLOBALS_CLASS_
+
